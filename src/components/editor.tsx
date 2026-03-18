@@ -1,11 +1,14 @@
+import "./i18n";
+
 import { PolotnoContainer, SidePanelWrap, WorkspaceWrap } from "polotno";
 import { Toolbar } from "polotno/toolbar/toolbar";
 import { PagesTimeline } from "polotno/pages-timeline";
 import { ZoomButtons } from "polotno/toolbar/zoom-buttons";
 import { SidePanel } from "polotno/side-panel";
 import { Workspace } from "polotno/canvas/workspace";
-import "polotno/polotno.blueprint.css";
 import { createStore } from "polotno/model/store";
+
+import "polotno/polotno.blueprint.css";
 
 const store = createStore({
   key: process.env.NEXT_PUBLIC_POLOTNO_KEY!,
@@ -13,7 +16,7 @@ const store = createStore({
 });
 store.addPage();
 
-export const Editor = () => {
+const Editor = () => {
   return (
     <PolotnoContainer style={{ width: "100vw", height: "100vh" }}>
       <SidePanelWrap>
