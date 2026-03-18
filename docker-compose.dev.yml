@@ -1,5 +1,3 @@
-version: "3.9"
-
 services:
   frontend:
     build: .
@@ -11,4 +9,5 @@ services:
     volumes:
       - .:/app # монтируем текущую папку в контейнер
       - /app/node_modules # чтобы node_modules не перезаписывались
+      - /app/.next # чтобы .next не перезаписывались
     command: npm run dev # запускаем
