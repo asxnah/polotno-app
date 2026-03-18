@@ -1,0 +1,9 @@
+version: "3.9"
+
+services:
+  frontend:
+    build: .
+    ports:
+      - "4200:4200" # пробрасываем порт из контейнера на хост
+    environment:
+      - NEXT_PUBLIC_POLOTNO_KEY=${NEXT_PUBLIC_POLOTNO_KEY} # ключ из .env
