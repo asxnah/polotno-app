@@ -1,6 +1,15 @@
 import { MediaItem, Step } from "@/entities/step/model/types";
 import { store } from "@/shared/config/polotno-store.ts";
 
+/**
+ * загружает проект видео-редактора в store polotno
+ * сначала пытается загрузить проект по url из api,
+ * если url отсутствует или загрузка не удалась, fallback на медиа из данных шага
+ *
+ * @param data - объект шага с media и scheme_description
+ * @param mediaId - id медиа для загрузки; если null, то ищется первый элемент из массива
+ * @throws ошибка, если не найдено видео для fallback
+ */
 export const loadProject = async ({
   data,
   mediaId,
@@ -8,6 +17,7 @@ export const loadProject = async ({
   data: Step;
   mediaId: number | null;
 }) => {
+  // получаем url проекта из api
   const projectUrl =
     data?.scheme_description?.videoEditorProject?.projectConfig;
   console.log("URL проекта из API: ", projectUrl);
@@ -23,6 +33,7 @@ export const loadProject = async ({
 
       const json = await res.json();
 
+      // очищаем store и загружаем json проекта
       store.clear();
       store.loadJSON(json);
 
@@ -34,20 +45,24 @@ export const loadProject = async ({
     console.log("URL проекта отсутствует, fallback...");
   }
 
+  // fallback: ищем медиа в данных шага
   const media = data.media;
 
   let target: MediaItem | undefined;
 
+  // если указан mediaId, ищем конкретное медиа
   if (mediaId) {
     target = media.find((m: any) => m.file_info?.id === mediaId);
   }
 
+  // если не нашли по id, ищем первый элемент из массива
   if (!target) {
     target = media.find((m: any) =>
       m.file_info?.mimetype?.startsWith("video/"),
     );
   }
 
+  // если видео не найдено, кидаем ошибку
   if (!target) {
     const m = "Видео не найдено в данных проекта";
 
@@ -55,6 +70,7 @@ export const loadProject = async ({
     throw new Error(m);
   }
 
+  // создаем новый проект
   store.clear();
   store.addPage();
 
