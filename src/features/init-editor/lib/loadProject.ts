@@ -51,7 +51,7 @@ export const loadProject = async ({
   let target: MediaItem | undefined;
 
   // если указан mediaId, ищем конкретное медиа
-  if (mediaId) {
+  if (mediaId != null) {
     target = media.find((m: any) => m.file_info?.id === mediaId);
   }
 
