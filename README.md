@@ -6,14 +6,14 @@ Next.js + Polotno project with Docker support (production and development)
 
 1. Create `.env` in the project root:
 
-``` bash
+```bash
 NEXT_PUBLIC_POLOTNO_KEY=your_polotno_key_here
 
 ```
 
 2. Install dependencies (optional, for local dev):
 
-``` bash
+```bash
 npm install
 
 ```
@@ -26,7 +26,7 @@ npm install
 
 Build and run:
 
-``` bash
+```bash
 docker compose build --no-cache
 docker compose up
 
@@ -38,7 +38,7 @@ App will be available at `http://localhost:4200`.
 
 Use the dev compose file for hot reload:
 
-``` bash
+```bash
 docker compose -f docker-compose.dev.yml up --build
 
 ```
@@ -50,7 +50,42 @@ docker compose -f docker-compose.dev.yml up --build
 
 ## Project Structure
 
-- `app/` - Next.js pages
-- `components/` - Polotno editor component
+- `app/` - Next.js pages and global settings
+
+- `src/entities/step/model/types.ts` - data types for steps and media
+
+- `src/features/init-editor/lib/loadProject.ts` - function to load a project
+
+- `src/features/init-editor/model/useInitEditor.ts` - React hook for editor initialization
+
+- `src/shared/api/getStep.ts` - API connector to fetch step data
+
+- `src/shared/config/polotno-store.ts.ts` - Polotno configuration and store
+
+- `src/shared/lib/query.ts` - read and validate query parameters from URL
+
+- `src/widgets/editor/lib/i18n.ts` - translation/localization for editor
+
+- `src/widgets/editor/ui/EditorPage.tsx` - editor page with loading/error states
+
+- `src/widgets/editor/ui/EditorUI.tsx` - Polotno editor UI, receives store as a prop
+
 - `.dockerignore` - files excluded from Docker build
-- `.env` - environment variables (API key)
+
+- `.env` - environment variables
+
+- `docker-compose.yml` / `docker-compose.dev.yml` - Docker Compose configuration
+
+- `Dockerfile` - container build instructions
+
+- `eslint.config.mjs` - ESLint configuration
+
+- `next.config.ts` - Next.js configuration
+
+- `tsconfig.json` - TypeScript configuration
+
+- `postcss.config.mjs` - PostCSS configuration
+
+- `package.json` / `package-lock.json` - project dependencies and scripts
+
+- `README.md` - project documentation
