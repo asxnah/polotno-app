@@ -43,7 +43,7 @@ export const useInitEditor = () => {
       } catch (e: any) {
         // логируем ошибку и обновляем состояния error и status
         console.error("Ошибка запуска редактора:", e.message);
-        setError(e.message);
+        setError('Ошибка на стороне сервера');
         setStatus("error");
       }
     };
