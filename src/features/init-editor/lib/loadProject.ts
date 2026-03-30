@@ -1,5 +1,6 @@
 import { MediaItem, Step } from "@/entities/step/model/types";
 import { store } from "@/shared/config/polotno-store.ts";
+import { getVideoSize } from "./getVideoSize";
 
 /**
  * загружает проект видео-редактора в store polotno

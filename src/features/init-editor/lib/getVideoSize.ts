@@ -1,4 +1,4 @@
-const getVideoSize = (
+export const getVideoSize = (
   src: string,
 ): Promise<{ width: number; height: number }> => {
   return new Promise((resolve, reject) => {
