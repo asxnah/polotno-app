@@ -10,6 +10,11 @@ import { LoaderCircle, X } from "lucide-react";
 const EditorPage = () => {
   const { status, error } = useInitEditor();
 
+  const mockIsSaving = true;
+  const mockSave = async () => {
+    return;
+  };
+
   if (status === "loading") {
     return (
       <div className="h-screen w-screen flex flex-col items-center justify-center gap-2">
@@ -32,7 +37,7 @@ const EditorPage = () => {
     );
   }
 
-  return <EditorUI store={store} />;
+  return <EditorUI store={store} onSave={mockSave} isSaving={mockIsSaving} />;
 };
 
 export default EditorPage;

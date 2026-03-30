@@ -9,3 +9,6 @@ export const store = createStore({
   key: process.env.NEXT_PUBLIC_POLOTNO_KEY!,
   showCredit: true,
 });
+
+// экспортируем тип store
+export type AppStore = typeof store;
