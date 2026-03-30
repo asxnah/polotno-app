@@ -1,7 +1,7 @@
 "use client";
 
 import dynamic from "next/dynamic";
-const Editor = dynamic(() => import("../src/widgets/editor/ui/EditorPage"), {
+const Editor = dynamic(() => import("../src/widgets/editor/pages/EditorPage"), {
   ssr: false,
 });
 

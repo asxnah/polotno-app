@@ -1,19 +1,27 @@
 "use client";
 
+import { useState } from "react";
+
 import { useInitEditor } from "@/features/init-editor/model/useInitEditor";
 import { store } from "@/shared/config/polotno-store.ts";
+import { useSaveEditor } from "@/features/init-editor/model/useSaveEditor";
 
-import EditorUI from "./EditorUI";
-
+import EditorUI from "../ui/EditorUI";
+import { Toast } from "../ui/Toast";
 import { LoaderCircle, X } from "lucide-react";
 
 const EditorPage = () => {
   const { status, error } = useInitEditor();
+  const [toast, setToast] = useState<{
+    message: string;
+    type: "success" | "error";
+  } | null>(null);
 
-  const mockIsSaving = true;
-  const mockSave = async () => {
-    return;
-  };
+  const { save, isSaving, progress } = useSaveEditor({
+    onSuccess: () => setToast({ message: "Сохранено", type: "success" }),
+    onError: (e) =>
+      setToast({ message: `Ошибка сохранения: ${e}`, type: "error" }),
+  });
 
   if (status === "loading") {
     return (
@@ -37,7 +45,23 @@ const EditorPage = () => {
     );
   }
 
-  return <EditorUI store={store} onSave={mockSave} isSaving={mockIsSaving} />;
+  return (
+    <>
+      <EditorUI
+        store={store}
+        onSave={save}
+        isSaving={isSaving}
+        progress={progress}
+      />
+      {toast && (
+        <Toast
+          message={toast.message}
+          type={toast.type}
+          onClose={() => setToast(null)}
+        />
+      )}
+    </>
+  );
 };
 
 export default EditorPage;

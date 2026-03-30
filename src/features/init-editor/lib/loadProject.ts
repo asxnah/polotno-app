@@ -21,12 +21,11 @@ export const loadProject = async ({
   // получаем url проекта из api
   const projectUrl =
     data?.scheme_description?.videoEditorProject?.projectConfig;
+  // просто дебаг
   console.log("URL проекта из API: ", projectUrl);
 
   // если есть ссылка на проект то пробуем загрузить
   if (projectUrl && typeof projectUrl === "string") {
-    // просто дебаг
-    console.log("Попытка загрузить проект по URL:", projectUrl);
     try {
       const res = await fetch(projectUrl);
 
