@@ -83,6 +83,10 @@ export const loadProject = async ({
 
   // создаем новый пустой проект
   store.clear();
+
+  // всегда задаем фиксированный размер канваса
+  store.setSize(1920, 1080);
+
   // добавляем одну страницу
   store.addPage();
 
@@ -93,39 +97,30 @@ export const loadProject = async ({
     target.file_info.s3_url,
   );
 
-  // размеры
+  // фиксированные размеры
   const canvasWidth = 1920;
   const canvasHeight = 1080;
 
-  let scaledWidth;
-  let scaledHeight;
-  let x;
-  let y;
+  // изначально масштабируем видео по высоте
+  let scaledHeight = canvasHeight;
 
-  // если видео чем 16:9
-  if (videoWidth / videoHeight >= canvasWidth / canvasHeight) {
-    // растягиваем видео на всю ширину канваса
+  // рассчитываем ширину пропорционально
+  let scaledWidth = (videoWidth / videoHeight) * scaledHeight;
+
+  // если видео слишком широкое
+  if (scaledWidth > canvasWidth) {
+    // ограничиваем ширину канвасом
     scaledWidth = canvasWidth;
-    // высоту считаем пропорционально, чтобы не исказить видео
-    scaledHeight = (videoHeight / videoWidth) * scaledWidth;
 
-    // по горизонтали заняли пространство
-    x = 0;
-    // центрируем по вертикали
-    y = (canvasHeight - scaledHeight) / 2;
-  } else {
-    // другие размеры видео
-
-    // масштабируем по высоте
-    scaledHeight = canvasHeight;
-    // считаем ширину пропорционально
-    scaledWidth = (videoWidth / videoHeight) * scaledHeight;
-
-    // центрируем по горизонтали
-    x = (canvasWidth - scaledWidth) / 2;
-    // по вертикали прижимаем сверху
-    y = 0;
+    // и пересчитываем высоту пропорционально
+    scaledHeight = canvasWidth / (videoWidth / videoHeight);
   }
+
+  // центрируем по горизонтали
+  const x = (canvasWidth - scaledWidth) / 2;
+
+  // центрируем по вертикали (если мы уменьшили высоту)
+  const y = (canvasHeight - scaledHeight) / 2;
 
   // добавляем видео как элемент polotno
   page.addElement({
