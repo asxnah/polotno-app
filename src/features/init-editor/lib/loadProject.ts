@@ -6,6 +6,7 @@ import { getVideoSize } from "./getVideoSize";
  * загружает проект видео-редактора в store polotno
  * сначала пытается загрузить проект по url из api,
  * если url отсутствует или загрузка не удалась, fallback на медиа из данных шага
+ * url внешний, поэтому используем fetch вместо axios
  *
  * @param data - объект шага с media и scheme_description
  * @param mediaId - id медиа для загрузки; если null, то ищется первый элемент из массива

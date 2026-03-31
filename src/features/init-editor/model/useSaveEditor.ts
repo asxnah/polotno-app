@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import axios from "axios";
 
 import { store } from "@/shared/config/polotno-store.ts";
 import { getQueryParams } from "@/shared/lib/query";
@@ -46,11 +47,13 @@ export const useSaveEditor = ({ onSuccess, onError }: SaveOptions = {}) => {
         );
       }
 
-      // базовый url для всех запросов к бэкенду
-      const baseUrl = backendBasePath;
-
-      // заголовки для fetch запросов, передаем токен авторизации
-      const headers = { Authorization: `Bearer ${authToken}` };
+      // апишка с базовым url и заголовками авторизации
+      const api = axios.create({
+        baseURL: backendBasePath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
 
       // === подготовка json проекта ===
       setProgress(5);
@@ -74,23 +77,16 @@ export const useSaveEditor = ({ onSuccess, onError }: SaveOptions = {}) => {
       console.log("Загружаем json проекта в медиа-архив");
 
       // отправляем проект на сервер
-      const jsonRes = await fetch(`${baseUrl}/api/media`, {
-        method: "POST",
-        headers,
-        body: jsonForm,
+      const jsonData = await api.post("/api/media", jsonForm, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      // проверяем успешность запроса
-      if (!jsonRes.ok)
-        throw new Error("Не удалось загрузить проект. попробуйте еще раз");
-
-      // парсим ответ сервера и достаем url загруженного json
-      const jsonData = await jsonRes.json();
-      const projectConfigUrl = jsonData.data?.[0]?.s3_url;
+      // достаем url загруженного json
+      const projectConfigUrl = jsonData.data?.data?.[0]?.s3_url;
 
       // если url не пришел, логируем и показываем пользователю понятное сообщение
       if (!projectConfigUrl) {
-        console.error("Нет url проекта: ", jsonData);
+        console.error("Нет URL проекта: ", jsonData.data);
         throw new Error("Не удалось сохранить проект. попробуйте еще раз");
       }
 
@@ -99,14 +95,10 @@ export const useSaveEditor = ({ onSuccess, onError }: SaveOptions = {}) => {
       console.log("Сохраняем ссылку на JSON проекта в уроке");
 
       // делаем PUT запрос, чтобы сервер знал, какой json проекта связан с шагом / уроком
-      await fetch(`${baseUrl}/api/step/${stepId}`, {
-        method: "PUT",
-        headers: { ...headers, "Content-Type": "application/json" },
-        body: JSON.stringify({
-          schemeDescription: {
-            videoEditorProject: { projectConfig: projectConfigUrl },
-          },
-        }),
+      await api.put(`/api/step/${stepId}`, {
+        schemeDescription: {
+          videoEditorProject: { projectConfig: projectConfigUrl },
+        },
       });
 
       // обновляем прогресс
@@ -135,35 +127,25 @@ export const useSaveEditor = ({ onSuccess, onError }: SaveOptions = {}) => {
       console.log("Загружаем отрендеренное видео в медиа-архив");
 
       // отправляем видео на сервер
-      const videoRes = await fetch(`${baseUrl}/api/media`, {
-        method: "POST",
-        headers,
-        body: videoForm,
+      const videoData = await api.post("/api/media", videoForm, {
+        headers: { "Content-Type": "multipart/form-data" },
       });
 
-      if (!videoRes.ok) throw new Error("не удалось загрузить видео");
-
       // парсим ответ сервера и достаем id нового видео
-      const videoData = await videoRes.json();
-      const newMediaId = videoData.data?.[0]?.id;
+      const newMediaId = videoData.data?.data?.[0]?.id;
 
       if (typeof newMediaId !== "number")
         throw new Error("ID видео отсутствует");
 
       // === привязка видео к уроку ===
       // сообщаем серверу, что шаг теперь использует новое видео
-      await fetch(`${baseUrl}/api/step/${stepId}/media`, {
-        method: "POST",
-        headers: { ...headers, "Content-Type": "application/json" },
-        body: JSON.stringify({ mediaId: newMediaId }),
+      await api.post(`/api/step/${stepId}/media`, {
+        mediaId: newMediaId,
       });
 
       // === удаление старого видео, если оно есть ===
       if (oldMediaId) {
-        await fetch(`${baseUrl}/api/step/${stepId}/media/${oldMediaId}`, {
-          method: "DELETE",
-          headers,
-        });
+        await api.delete(`/api/step/${stepId}/media/${oldMediaId}`);
       }
 
       // сохраняем прогресс 100% и вызываем колбек успешного сохранения
