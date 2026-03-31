@@ -40,10 +40,14 @@ export const useInitEditor = () => {
 
         // если все прошло успешно, ставим статус ready
         setStatus("ready");
-      } catch (e: any) {
-        // логируем ошибку и обновляем состояния error и status
-        console.error("Ошибка запуска редактора:", e.message);
-        setError('Ошибка на стороне сервера');
+      } catch (e: unknown) {
+        if (e instanceof Error) {
+          console.error("Ошибка запуска редактора:", e.message);
+        } else {
+          console.error("Неизвестная ошибка:", e);
+        }
+
+        setError("Ошибка на стороне сервера");
         setStatus("error");
       }
     };

@@ -116,7 +116,7 @@ export const useSaveEditor = ({ onSuccess, onError }: SaveOptions = {}) => {
       // === рендер видео ===
       // вызываем функцию storeToVideo, которая превращает проект в видео
       const videoBlob = await storeToVideo({
-        store: store as any,
+        store: store as unknown as Parameters<typeof storeToVideo>[0]["store"], // костыльная типизация
         fps: 30, // кадров в секунду
         pixelRatio: 1, // качество рендеринга (1 / 2)
         onProgress: (value) => {
@@ -170,9 +170,13 @@ export const useSaveEditor = ({ onSuccess, onError }: SaveOptions = {}) => {
       setProgress(100);
       onSuccess?.();
       console.log("Сохранение завершено успешно");
-    } catch (e: any) {
+    } catch (e: unknown) {
       // ловим все ошибки, показываем пользователю понятное сообщение
-      onError?.(e.message || "ошибка сохранения");
+      if (e instanceof Error) {
+        onError?.(e.message);
+      } else {
+        onError?.("Ошибка сохранения");
+      }
     } finally {
       // сбрасываем флаг сохранения и прогресс через 800мс
       setIsSaving(false);

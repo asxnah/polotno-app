@@ -62,14 +62,12 @@ export const loadProject = async ({
 
   // если указан mediaId, ищем конкретное медиа
   if (mediaId != null) {
-    target = media.find((m: any) => m.file_info?.id === mediaId);
+    target = media.find((m) => m.file_info?.id === mediaId);
   }
 
   // если не нашли по id, ищем первый элемент из массива
   if (!target) {
-    target = media.find((m: any) =>
-      m.file_info?.mimetype?.startsWith("video/"),
-    );
+    target = media.find((m) => m.file_info?.mimetype?.startsWith("video/"));
   }
 
   // если видео не найдено, кидаем ошибку
